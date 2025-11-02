@@ -16,11 +16,11 @@ class HarborClient:
     """Client for interacting with Harbor API."""
 
     def __init__(
-        self,
-        harbor_url: str,
-        username: str,
-        password: str,
-        http_client: httpx.AsyncClient | None = None,
+            self,
+            harbor_url: str,
+            username: str,
+            password: str,
+            http_client: httpx.AsyncClient | None = None,
     ) -> None:
         """
         Initialize Harbor client.
@@ -60,11 +60,11 @@ class HarborClient:
             return ""
 
     async def _send_api_request(
-        self,
-        endpoint: str,
-        method: str = "GET",
-        params: dict[str, Any] | None = None,
-        json_data: dict[str, Any] | None = None,
+            self,
+            endpoint: str,
+            method: str = "GET",
+            params: dict[str, Any] | None = None,
+            json_data: dict[str, Any] | None = None,
     ) -> tuple[Any, dict[str, str]]:
         """
         Send a request to the Harbor API.
@@ -76,7 +76,7 @@ class HarborClient:
             json_data: JSON body for POST/PUT requests
 
         Returns:
-            Tuple of (response JSON, response headers)
+            Tuple of (response JSON or empty dict, response headers)
         """
         url = f"{self.api_url}{endpoint}"
 
@@ -116,7 +116,9 @@ class HarborClient:
                 except (TypeError, AttributeError):
                     headers_dict = {}
 
-                return response.json() if response.text else {}, headers_dict
+                payload = response.json() if response.text else {}
+
+                return payload, headers_dict
         except HTTPStatusError as e:
             logger.error(
                 f"HTTP error for {method} {url}: "
@@ -128,9 +130,9 @@ class HarborClient:
             raise
 
     async def _get_paginated_data(
-        self,
-        endpoint: str,
-        params: dict[str, Any] | None = None,
+            self,
+            endpoint: str,
+            params: dict[str, Any] | None = None,
     ) -> AsyncGenerator[list[dict[str, Any]], None]:
         """
         Fetch paginated data from Harbor API.
@@ -179,7 +181,7 @@ class HarborClient:
 
     @cache_iterator_result()
     async def get_paginated_projects(
-        self, params: dict[str, Any] | None = None
+            self, params: dict[str, Any] | None = None
     ) -> AsyncGenerator[list[dict[str, Any]], None]:
         """
         Get all projects with pagination.
@@ -220,7 +222,7 @@ class HarborClient:
         return data
 
     async def get_paginated_users(
-        self, params: dict[str, Any] | None = None
+            self, params: dict[str, Any] | None = None
     ) -> AsyncGenerator[list[dict[str, Any]], None]:
         """
         Get all users with pagination.
@@ -254,7 +256,7 @@ class HarborClient:
 
     @cache_iterator_result()
     async def get_paginated_repositories(
-        self, project_name: str | None = None, params: dict[str, Any] | None = None
+            self, project_name: str | None = None, params: dict[str, Any] | None = None
     ) -> AsyncGenerator[list[dict[str, Any]], None]:
         """
         Get repositories with pagination.
@@ -277,7 +279,7 @@ class HarborClient:
             yield repositories
 
     async def get_repository(
-        self, project_name: str, repository_name: str
+            self, project_name: str, repository_name: str
     ) -> dict[str, Any]:
         """
         Get a single repository.
@@ -298,10 +300,10 @@ class HarborClient:
         return data
 
     async def get_paginated_artifacts(
-        self,
-        project_name: str,
-        repository_name: str,
-        params: dict[str, Any] | None = None,
+            self,
+            project_name: str,
+            repository_name: str,
+            params: dict[str, Any] | None = None,
     ) -> AsyncGenerator[list[dict[str, Any]], None]:
         """
         Get artifacts for a repository with pagination.
@@ -330,11 +332,11 @@ class HarborClient:
             yield artifacts
 
     async def get_artifact(
-        self,
-        project_name: str,
-        repository_name: str,
-        reference: str,
-        params: dict[str, Any] | None = None,
+            self,
+            project_name: str,
+            repository_name: str,
+            reference: str,
+            params: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """
         Get a single artifact by reference (digest or tag).
@@ -359,7 +361,7 @@ class HarborClient:
 
     @cache_iterator_result()
     async def get_all_projects_with_repositories(
-        self,
+            self,
     ) -> AsyncGenerator[tuple[dict[str, Any], list[dict[str, Any]]], None]:
         """
         Get all projects with their repositories.
@@ -384,7 +386,7 @@ class HarborClient:
                 yield project, repositories
 
     async def get_all_artifacts_for_projects(
-        self, params: dict[str, Any] | None = None
+            self, params: dict[str, Any] | None = None
     ) -> AsyncGenerator[list[dict[str, Any]], None]:
         """
         Get all artifacts across all projects and repositories.
@@ -429,7 +431,7 @@ class HarborClient:
                     # Stream artifacts from all repositories in parallel
                     if tasks:
                         async for artifact_batch in stream_async_iterators_tasks(
-                            *tasks
+                                *tasks
                         ):
                             yield artifact_batch
 
@@ -455,12 +457,12 @@ class HarborClient:
             return []
 
     async def create_webhook(
-        self,
-        project_name: str,
-        webhook_url: str,
-        event_types: list[str],
-        name: str | None = None,
-        auth_header: str | None = None,
+            self,
+            project_name: str,
+            webhook_url: str,
+            event_types: list[str],
+            name: str | None = None,
+            auth_header: str | None = None,
     ) -> dict[str, Any] | None:
         """
         Create a webhook for a project.
@@ -511,10 +513,10 @@ class HarborClient:
             return None
 
     async def setup_webhooks_for_all_projects(
-        self,
-        webhook_url: str,
-        event_types: list[str] | None = None,
-        auth_header: str | None = None,
+            self,
+            webhook_url: str,
+            event_types: list[str] | None = None,
+            auth_header: str | None = None,
     ) -> dict[str, Any]:
         """
         Set up webhooks for all projects.
